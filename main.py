@@ -2,16 +2,22 @@ import sys
 from config.app_config import load_configuration
 from utils.logger import setup_logger
 from business_logic import BusinessLogic
+import asyncio
 
-def main():
+
+async def main():
     """Main function to run the Bitcoin tracker application."""
-    setup_logger(__name__)
+    # Configure the root logger first
+    logger = setup_logger(__name__)
+    logger.info("Starting Bitcoin Tracker Application")
+
     config = load_configuration()
     if config is None:
         sys.exit(1)
 
     tracker = BusinessLogic(config)
-    tracker.run_tracker()
+    await tracker.run_tracker()
+
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
