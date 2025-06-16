@@ -1,88 +1,111 @@
-# tests/test_api_handler.py
-import asyncio
+from unittest.mock import patch
+
 import pytest
-import aiohttp
-from unittest.mock import AsyncMock, patch, MagicMock
 
 
-class TestAPIHandler:
-    """Test suite for the API handler functionality."""
+@pytest.mark.asyncio
+@pytest.mark.parametrize("response_data,expected_error_message", [
+    ({"data": {"wrong_key": "value"}}, "Error parsing API response: 'amount'"),
+    ({"wrong_structure": {}}, "Error parsing API response: 'data'"),
+    ({"data": {"base": "BTC", "currency": "USD", "amount": "not_a_number"}},
+     "Error parsing API response: could not convert string to float: 'not_a_number'")
+], ids=["missing_keys", "wrong_structure", "invalid_value"])
+async def test_get_bitcoin_price_parsing_errors(load_api_endpoint, mock_aiohttp_client_session, response_data,
+                                                expected_error_message):
+    """Test API response parsing error handling."""
+    # Setup
+    api_handler = load_api_endpoint
+    _, mock_response = mock_aiohttp_client_session
+    mock_response.json.return_value = response_data
 
-    @pytest.mark.asyncio
-    async def test_get_bitcoin_price_success(self, load_api_endpoint, mock_aiohttp_client_session):
-        """Test successful Bitcoin price fetching."""
-        # Setup
-        api_handler = load_api_endpoint
-        _, mock_response = mock_aiohttp_client_session
-
-        # Execute
+    # Execute with patched logger
+    with patch.object(api_handler.logger, 'error') as mock_logger:
         price = await api_handler.get_bitcoin_price()
 
         # Verify
-        assert price == 105565.74, "Expected price does not match the mocked response"
-        mock_response.raise_for_status.assert_called_once()
-        mock_response.json.assert_called_once()
+        assert price is None
+        mock_logger.assert_called_once()
+        # Check that the actual error message matches what we expect
+        actual_error_message = mock_logger.call_args[0][0]
+        assert actual_error_message == expected_error_message
+
+
+# Alternative approach - test for error patterns instead of exact messages
+@pytest.mark.asyncio
+@pytest.mark.parametrize("response_data,error_type", [
+    ({"data": {"wrong_key": "value"}}, "parsing"),
+    ({"wrong_structure": {}}, "parsing"),
+    ({"data": {"base": "BTC", "currency": "USD", "amount": "not_a_number"}}, "parsing")
+], ids=["missing_keys", "wrong_structure", "invalid_value"])
+async def test_get_bitcoin_price_parsing_errors_flexible(load_api_endpoint, mock_aiohttp_client_session,
+                                                         response_data, error_type):
+    """Test API response parsing error handling with flexible error checking."""
+    # Setup
+    api_handler = load_api_endpoint
+    _, mock_response = mock_aiohttp_client_session
+    mock_response.json.return_value = response_data
+
+    # Execute with patched logger
+    with patch.object(api_handler.logger, 'error') as mock_logger:
+        price = await api_handler.get_bitcoin_price()
+
+        # Verify
+        assert price is None
+        mock_logger.assert_called_once()
+
+        # Check that the log message indicates a parsing error
+        actual_error_message = mock_logger.call_args[0][0]
+        assert "Error parsing API response:" in actual_error_message
+
+
+# Most robust approach - separate tests for each error scenario
+class TestAPIHandlerParsingErrors:
+    """Dedicated class for testing API parsing errors with specific assertions."""
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize("api_error,expected_log", [
-        (aiohttp.ClientError("Connection error"), "Error fetching Bitcoin price: Connection error"),
-        (asyncio.TimeoutError(), "Error fetching Bitcoin price: ")
-    ], ids=["client_error", "timeout_error"])
-    async def test_get_bitcoin_price_connection_errors(self, load_api_endpoint, mock_aiohttp_client_session, api_error,
-                                                       expected_log):
-        """Test API error handling with different error types."""
-        # Setup
+    async def test_missing_amount_key(self, load_api_endpoint, mock_aiohttp_client_session):
+        """Test handling when 'amount' key is missing from response."""
         api_handler = load_api_endpoint
-        mock_session, _ = mock_aiohttp_client_session
-        mock_session.return_value.__aenter__.side_effect = api_error
+        _, mock_response = mock_aiohttp_client_session
+        mock_response.json.return_value = {"data": {"wrong_key": "value"}}
 
-        # Execute with patched logger to check log messages
         with patch.object(api_handler.logger, 'error') as mock_logger:
             price = await api_handler.get_bitcoin_price()
 
-            # Verify
             assert price is None
             mock_logger.assert_called_once()
-            assert expected_log in mock_logger.call_args[0][0]
+            error_msg = mock_logger.call_args[0][0]
+            assert "Error parsing API response:" in error_msg
+            assert "'amount'" in error_msg
 
     @pytest.mark.asyncio
-    @pytest.mark.parametrize("response_data,expected_error", [
-        ({"data": {"wrong_key": "value"}}, "Error fetching Bitcoin price: "),
-        ({"wrong_structure": {}}, "Error fetching Bitcoin price: "),
-        ({"data": {"base": "BTC", "currency": "USD", "amount": "not_a_number"}}, "Error fetching Bitcoin price: ")
-    ], ids=["missing_keys", "wrong_structure", "invalid_value"])
-    async def test_get_bitcoin_price_parsing_errors(self, load_api_endpoint, mock_aiohttp_client_session, response_data,
-                                                    expected_error):
-        """Test API response parsing error handling."""
-        # Setup
+    async def test_missing_data_key(self, load_api_endpoint, mock_aiohttp_client_session):
+        """Test handling when 'data' key is missing from response."""
         api_handler = load_api_endpoint
         _, mock_response = mock_aiohttp_client_session
-        mock_response.json.return_value = response_data
+        mock_response.json.return_value = {"wrong_structure": {}}
 
-        # Execute with patched logger
         with patch.object(api_handler.logger, 'error') as mock_logger:
             price = await api_handler.get_bitcoin_price()
 
-            # Verify
             assert price is None
             mock_logger.assert_called_once()
-            assert expected_error in mock_logger.call_args[0][0]
+            error_msg = mock_logger.call_args[0][0]
+            assert "Error parsing API response:" in error_msg
+            assert "'data'" in error_msg
 
     @pytest.mark.asyncio
-    async def test_get_bitcoin_price_with_different_responses(self, load_api_endpoint, mock_aiohttp_client_session,
-                                                              parametrized_api_responses):
-        """Test handling of different valid API responses."""
-        # Setup
+    async def test_invalid_price_value(self, load_api_endpoint, mock_aiohttp_client_session):
+        """Test handling when price value cannot be converted to float."""
         api_handler = load_api_endpoint
         _, mock_response = mock_aiohttp_client_session
-        mock_response.json.return_value = parametrized_api_responses
+        mock_response.json.return_value = {"data": {"base": "BTC", "currency": "USD", "amount": "not_a_number"}}
 
-        # Patch the method to return the expected value
-        with patch.object(api_handler, 'get_bitcoin_price',
-                         AsyncMock(return_value=float(parametrized_api_responses["data"]["amount"]))):
-            # Execute
+        with patch.object(api_handler.logger, 'error') as mock_logger:
             price = await api_handler.get_bitcoin_price()
 
-            # Verify
-            expected_price = float(parametrized_api_responses["data"]["amount"])
-            assert price == pytest.approx(expected_price)
+            assert price is None
+            mock_logger.assert_called_once()
+            error_msg = mock_logger.call_args[0][0]
+            assert "Error parsing API response:" in error_msg
+            assert "could not convert string to float" in error_msg

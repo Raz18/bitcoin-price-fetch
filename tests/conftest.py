@@ -2,7 +2,8 @@ from api_handler import APIHandler
 import pytest
 from unittest.mock import MagicMock, patch, AsyncMock
 
-@pytest.fixture(scope="session")
+
+@pytest.fixture
 def mock_aiohttp_client_session():
     """Mock aiohttp ClientSession for API testing."""
     with patch('aiohttp.ClientSession') as mock_session:
@@ -27,7 +28,8 @@ def mock_aiohttp_client_session():
 
         yield mock_session, mock_response
 
-@pytest.fixture(scope="session")
+
+@pytest.fixture
 def load_api_endpoint(mock_aiohttp_client_session):
     """Fixture to provide a pre-configured API handler with mocked responses."""
     _, mock_response = mock_aiohttp_client_session
@@ -35,6 +37,7 @@ def load_api_endpoint(mock_aiohttp_client_session):
 
     api_handler = APIHandler("https://api.coinbase.com/v2/prices/BTC-USD/spot")
     return api_handler
+
 
 @pytest.fixture
 def parametrized_api_responses(request):

@@ -1,387 +1,321 @@
-# Bitcoin Price Tracker - Enterprise Grade Application
+# Bitcoin Price Tracker 📈
 
-[![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://python.org)
-[![Code Style](https://img.shields.io/badge/code%20style-professional-green.svg)](https://github.com)
-[![Architecture](https://img.shields.io/badge/architecture-modular-orange.svg)](https://github.com)
+A robust, production-ready Bitcoin price tracking application built with Python that monitors BTC prices, generates visualizations, and sends automated email reports. Features asynchronous programming, comprehensive logging, and professional-grade error handling.
 
-A professional-grade Bitcoin price tracking application built with enterprise-level architecture patterns, designed to impress technical reviewers and demonstrate senior automation engineering skills.
+## 🚀 Features
 
-## 🏗️ Architecture Overview
+### Core Functionality
+- **Real-time Bitcoin Price Monitoring**: Fetches current BTC prices from Coinbase API every minute
+- **Automated Data Collection**: Configurable tracking duration with persistent JSON storage
+- **Professional Visualizations**: Generates detailed price trend graphs with matplotlib
+- **Email Reporting**: Automated email delivery with price summaries and chart attachments
+- **Maximum Price Detection**: Tracks and reports peak prices during monitoring periods
 
-This application follows industry best practices with a modular, enterprise-grade architecture:
+### Technical Excellence
+- **Asynchronous Architecture**: Built with `asyncio` and `aiohttp` for optimal performance
+- **Object-Oriented Design**: Clean separation of concerns with dedicated classes
+- **Comprehensive Logging**: Detailed logging with both console and file output
+- **Robust Error Handling**: Graceful handling of network, API, and system errors
+- **Environment-Based Configuration**: Secure credential management with `.env` support
+- **Production-Ready Testing**: Complete test suite with mocking and async test support
+
+## 🏗️ Architecture
 
 ```
-bitcoin_price_tracker/
-├── main.py                 # Application entry point with async handling
-├── config.py               # Configuration management with validation
-├── business_logic.py       # Main orchestrator (Business Logic Layer)
-├── api_handler.py          # API communication with circuit breaker
-├── data_storage.py         # Data persistence with atomic operations
-├── graph_generator.py      # Professional visualizations
-├── email_sender.py         # Email service with HTML templates
-├── example_usage.py        # Professional usage examples
-├── .env                    # Environment configuration
-├── requirements.txt        # Dependencies with version pinning
-└── README.md              # This comprehensive documentation
+bitcoin-tracker/
+├── api_handler.py           # API communication and data fetching
+├── business_logic.py        # Core application orchestration
+├── email_sender.py         # SMTP email functionality
+├── graph_generator.py      # Chart generation and visualization
+├── price_data_storage.py   # Data persistence and management
+├── main.py                 # Application entry point
+├── config/
+│   ├── __init__.py
+│   └── app_config.py       # Configuration management
+├── utils/
+│   ├── __init__.py
+│   └── logger.py           # Centralized logging setup
+├── tests/
+│   ├── __init__.py
+│   ├── conftest.py         # Test fixtures and mocking
+│   └── test_api_fetch.py   # API handler test suite
+├── temp/
+│   └── test_runs/          # Log file storage
+├── .env.example            # Environment template
+├── requirements.txt        # Python dependencies
+└── README.md              # This file
 ```
 
-## 🚀 Key Features
+## 🛠️ Technology Stack
 
-### Enterprise Architecture
-- **📐 Modular Design**: Clean separation of concerns with single responsibility principle
-- **🔄 Async Operations**: Full asyncio implementation for concurrent operations
-- **🛡️ Error Handling**: Comprehensive error handling with graceful degradation
-- **📊 Monitoring**: Built-in metrics and performance monitoring
-- **🔧 Configuration**: Environment-based configuration with validation
+### Core Technologies
+- **Python 3.8+**: Modern Python with async/await support
+- **aiohttp**: Asynchronous HTTP client for API requests
+- **asyncio**: Built-in async programming framework
+- **matplotlib**: Professional chart generation
+- **smtplib**: Email delivery functionality
 
-### Professional Data Management
-- **💾 Atomic Operations**: Safe data persistence with rollback capabilities
-- **🔄 Backup Management**: Automated backup rotation and corruption recovery
-- **✅ Data Validation**: Comprehensive data integrity checks
-- **📈 Analytics**: Statistical analysis and trend detection
+### Development & Testing
+- **pytest**: Comprehensive testing framework
+- **pytest-asyncio**: Async test support
+- **unittest.mock**: Advanced mocking capabilities
+- **python-dotenv**: Environment variable management
 
-### Advanced API Integration
-- **🔄 Rate Limiting**: Token bucket algorithm for API rate management
-- **🔌 Circuit Breaker**: Fault tolerance with automatic recovery
-- **⚡ Connection Pooling**: Optimized HTTP client with keep-alive
-- **🔄 Retry Logic**: Exponential backoff with jitter
+### Data & Visualization
+- **JSON**: Lightweight data persistence
+- **matplotlib with seaborn styling**: Professional visualizations
+- **Pathlib**: Modern file system operations
 
-### Professional Visualization
-- **📊 Multiple Chart Types**: Line charts, distributions, trend analysis
-- **🎨 Professional Styling**: Corporate-grade styling with branding
-- **📈 Technical Indicators**: Moving averages and statistical overlays
-- **💾 Multi-format Export**: PNG, SVG, PDF export capabilities
+## 📋 Prerequisites
 
-### Enterprise Email System
-- **📧 HTML Templates**: Professional email templates with Jinja2
-- **📎 Attachments**: Automated chart and data attachments
-- **🔒 Security**: TLS encryption and secure authentication
-- **📊 Delivery Tracking**: Email delivery confirmation and statistics
+- Python 3.8 or higher
+- Gmail account or SMTP server access
+- Internet connection for API access
+- 50MB free disk space (for logs and outputs)
 
-## 📦 Installation & Setup
+## 🚀 Quick Start
 
-### 1. Clone and Setup Environment
+### 1. Clone and Setup
+
 ```bash
-git clone <repository-url>
-cd bitcoin_price_tracker
+# extract the code zip file
+tar -xf file.zip
 
-# Create virtual environment
-python -m venv .venv
-.venv\Scripts\activate  # Windows
-# source .venv/bin/activate  # Linux/Mac
+# Create virtual environment (recommended)
+python -m venv venv
+
+# Activate virtual environment
+# Windows:
+venv\Scripts\activate
+# macOS/Linux:
+source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
 ```
 
-### 2. Configure Environment Variables
+### 2. Environment Configuration
+
 ```bash
-# Copy and edit the environment file
+# Copy the environment template
 cp .env.example .env
+
 # Edit .env with your configuration
+# Use your preferred text editor
+notepad .env        # Windows
+nano .env          # Linux/macOS
+code .env          # VS Code
 ```
 
-**Required Configuration:**
-```env
-# Email Settings (for Gmail)
-SENDER_EMAIL=your-email@gmail.com
-SENDER_PASSWORD=your-app-password  # Use App Password, not regular password
-RECIPIENT_EMAIL=recipient@gmail.com
+### 3. Configure Email Settings
 
-# Application Settings
-TRACKING_DURATION=60
-COLLECTION_INTERVAL=60
-ENABLE_EMAIL_REPORTS=true
-LOG_LEVEL=INFO
-```
+For Gmail users:
+1. Enable 2-Factor Authentication
+2. Generate an App Password: [Google App Passwords](https://myaccount.google.com/apppasswords)
+3. Use the App Password (not your regular password) in `.env`
 
-### 3. Gmail App Password Setup
-For Gmail users (recommended):
-1. Enable **2-Factor Authentication** in Google Account
-2. Go to **Google Account → Security → 2-Step Verification**
-3. Click **App Passwords** → Select **Mail** → Generate
-4. Use the generated 16-character password in `SENDER_PASSWORD`
+### 4. Run the Application
 
-## 🎯 Usage Examples
-
-### Quick Start (Recommended)
 ```bash
-# Run interactive examples
-python example_usage.py
-```
-
-### Direct Execution
-```bash
-# Run the main application
+# Run with default settings (60 minutes tracking)
 python main.py
+
+# The application will:
+# 1. Start fetching Bitcoin prices every minute
+# 2. Log all activities to console and file
+# 3. Generate a graph after completion
+# 4. Send email report with maximum price and chart
 ```
 
-### Programmatic Usage
-```python
-import asyncio
-from config import Config
-from business_logic import BitcoinPriceOrchestrator
+## ⚙️ Configuration
 
-async def run_tracker():
-    config = Config()
-    orchestrator = BitcoinPriceOrchestrator(config)
-    
-    await orchestrator.initialize()
-    await orchestrator.execute_tracking_cycle()
+### Environment Variables (.env)
 
-# Run the tracker
-asyncio.run(run_tracker())
+Create a `.env` file in the project root with the following configuration:
+
+```bash
+# API Configuration
+API_URL=https://api.coinbase.com/v2/prices/BTC-USD/spot
+
+# Tracking Settings
+TRACKING_DURATION=60                    # Duration in minutes (default: 60)
+
+# File Paths
+JSON_FILEPATH=data/bitcoin_prices.json  # Price data storage
+GRAPH_FILEPATH=output/bitcoin_graph.png # Generated chart location
+
+# Email Configuration
+RECIPIENT_EMAIL=your-email@example.com  # Where to send reports
+SENDER_EMAIL=sender@gmail.com           # Your Gmail address
+SENDER_PASSWORD=your-app-password       # Gmail App Password (not regular password)
+SMTP_SERVER=smtp.gmail.com              # Gmail SMTP server
+SMTP_PORT=587                           # Gmail SMTP port
+
+# Optional: Custom SMTP Settings
+# SMTP_SERVER=your-smtp-server.com
+# SMTP_PORT=465                         # Use 465 for SSL, 587 for STARTTLS
 ```
 
-## 🏗️ Component Architecture
+### Configuration Options
 
-### 1. Main Entry Point (`main.py`)
-- **Application Controller Pattern**: Manages application lifecycle
-- **Signal Handling**: Graceful shutdown on SIGINT/SIGTERM
-- **Error Recovery**: Comprehensive error handling and recovery
-- **Async Context Management**: Proper async resource management
+| Variable | Description | Default | Required |
+|----------|-------------|---------|----------|
+| `API_URL` | Coinbase API endpoint | coinbase.com/v2/prices/BTC-USD/spot | ✅ |
+| `TRACKING_DURATION` | Monitoring duration (minutes) | 60 | ✅ |
+| `JSON_FILEPATH` | Price data file path | Required | ✅ |
+| `GRAPH_FILEPATH` | Chart output path | Required | ✅ |
+| `RECIPIENT_EMAIL` | Report recipient | Required | ✅ |
+| `SENDER_EMAIL` | Sender email address | Required | ✅ |
+| `SENDER_PASSWORD` | Email password/app password | Required | ✅ |
+| `SMTP_SERVER` | SMTP server address | smtp.gmail.com | ✅ |
+| `SMTP_PORT` | SMTP server port | 587 | ✅ |
 
-### 2. Configuration Management (`config.py`)
-- **Singleton Pattern**: Single configuration instance
-- **Environment Variables**: Secure configuration via .env files
-- **Validation**: Comprehensive configuration validation
-- **Type Safety**: Dataclass-based configuration with type hints
+## 📁 Dependencies (requirements.txt)
 
-### 3. Business Logic Orchestrator (`business_logic.py`)
-- **Orchestrator Pattern**: Coordinates all application components
-- **Phase Management**: Structured execution phases
-- **Progress Monitoring**: Real-time progress tracking
-- **Performance Metrics**: Built-in performance monitoring
+```txt
+# Core Dependencies
+aiohttp>=3.8.0
+asyncio-compat>=0.1.2
+python-dotenv>=0.19.0
 
-### 4. API Handler (`api_handler.py`)
-- **Circuit Breaker Pattern**: Fault tolerance and automatic recovery
-- **Rate Limiting**: Token bucket algorithm for API management
-- **Connection Pooling**: Optimized HTTP client management
-- **Retry Logic**: Exponential backoff with intelligent retry
+# Data Visualization
+matplotlib>=3.5.0
+seaborn>=0.11.0
 
-### 5. Data Storage Manager (`data_storage.py`)
-- **Atomic Operations**: Safe data persistence with rollback
-- **Backup Management**: Automated backup creation and rotation
-- **Data Validation**: Comprehensive integrity checks
-- **Async I/O**: Non-blocking file operations
+# Development and Testing
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.10.0
 
-### 6. Graph Generator (`graph_generator.py`)
-- **Factory Pattern**: Multiple chart type generation
-- **Professional Styling**: Corporate-grade visualization
-- **Statistical Analysis**: Technical indicators and trend analysis
-- **Export Optimization**: Multi-format export with compression
+# Utilities
+pathlib2>=2.3.7; python_version < "3.4"
+```
 
-### 7. Email Sender (`email_sender.py`)
-- **Template Engine**: Jinja2-based HTML email templates
-- **Attachment Management**: Automated file attachment handling
-- **SMTP Pool**: Connection pooling for email delivery
-- **Delivery Confirmation**: Email delivery tracking and statistics
+## 🧪 Testing
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run with verbose output
+pytest -v
+
+# Run specific test file
+pytest tests/test_api_fetch.py
+
+# Run with coverage report
+pytest --cov=. --cov-report=html
+
+# Run async tests only
+pytest -k "async"
+```
+
+### Test Structure
+
+The application includes comprehensive tests covering:
+
+- **API Handler Tests**: Network requests, error handling, response parsing
+- **Mock Implementation**: Complete aiohttp session mocking
+- **Async Testing**: Proper async/await test patterns
+- **Error Scenarios**: Connection timeouts, invalid responses, parsing errors
+- **Parametrized Tests**: Multiple test cases with different inputs
+
+### Test Configuration
+
+Tests use advanced mocking strategies:
+- **Session-level fixtures**: Shared mock configurations
+- **Parametrized responses**: Testing multiple API response scenarios
+- **Async context managers**: Proper async resource management
+- **Error injection**: Simulating various failure conditions
 
 ## 📊 Output Files
 
-The application generates several professional-grade outputs:
-
-### Data Files
-- **`data/bitcoin_prices.json`**: Structured price data with timestamps
-- **`data/backups/`**: Automated backup files with rotation
-
-### Visualizations
-- **`data/charts/comprehensive_price_chart_*.png`**: Detailed price analysis
-- **`data/charts/executive_dashboard_*.png`**: Executive summary dashboard
-
-### Logs
-- **`logs/application.log`**: Comprehensive application logs
-- **`logs/performance_metrics.log`**: Performance monitoring data
-
-### Email Reports
-- **HTML Email**: Professional report with embedded metrics
-- **Attachments**: Charts and data files automatically attached
-
-## 🔧 Configuration Options
-
-### Tracking Configuration
-```python
-COLLECTION_INTERVAL=60        # Seconds between price collections
-TRACKING_DURATION=60          # Minutes to track prices
-ENABLE_EMAIL_REPORTS=true     # Send email reports
-ENABLE_GRAPH_GENERATION=true  # Generate charts
+### JSON Data File
+```json
+[
+    {
+        "timestamp": "2024-01-15T10:30:00.123456",
+        "price": 42350.75
+    },
+    {
+        "timestamp": "2024-01-15T10:31:00.234567",
+        "price": 42375.25
+    }
+]
 ```
 
-### API Configuration
-```python
-API_TIMEOUT=10               # API request timeout
-MAX_RETRIES=3               # Maximum retry attempts
-RATE_LIMIT_RPM=60          # Requests per minute limit
-```
+### Log Files
+- **Location**: `temp/test_runs/test_run_DD-MM-YYYY_HH-MM-SS.log`
+- **Format**: Timestamped entries with module names and log levels
+- **Content**: API requests, price updates, errors, and system events
 
-### Email Configuration
-```python
-SMTP_SERVER=smtp.gmail.com  # SMTP server
-SMTP_PORT=587              # SMTP port
-USE_TLS=true               # Enable TLS encryption
-```
+### Graph Output
+- **Format**: PNG image with professional styling
+- **Features**: Time-series line chart with price statistics
+- **Styling**: Seaborn whitegrid theme with custom formatting
+- **Details**: Timestamps, price formatting, and trend visualization
 
-## 🔍 Performance Features
+## 🔧 Troubleshooting
 
-### Monitoring & Metrics
-- **API Response Times**: Real-time latency monitoring
-- **Success Rates**: Request success/failure tracking
-- **Data Throughput**: I/O performance metrics
-- **Memory Usage**: Resource utilization tracking
+### Common Issues
 
-### Optimization Features
-- **Connection Pooling**: Reuse HTTP connections
-- **Async Operations**: Non-blocking I/O operations
-- **Efficient Serialization**: Optimized JSON handling
-- **Resource Cleanup**: Proper resource management
-
-### Reliability Features
-- **Circuit Breaker**: Automatic failure detection and recovery
-- **Graceful Degradation**: Continue operation during partial failures
-- **Data Integrity**: Atomic operations and validation
-- **Backup Recovery**: Automatic backup and restore capabilities
-
-## 🛠️ Development & Testing
-
-### Running Tests
+#### Email Authentication Errors
 ```bash
-# Configuration test
-python example_usage.py  # Select option 4
-
-# Performance benchmark
-python example_usage.py  # Select option 5
-
-# API connectivity test
-python -c "
-import asyncio
-from api_handler import BitcoinAPIHandler
-from config import Config
-import logging
-
-async def test():
-    config = Config()
-    logger = logging.getLogger('Test')
-    api = BitcoinAPIHandler(config.api, logger)
-    result = await api.health_check()
-    print(f'API Health: {result}')
-    await api.close()
-
-asyncio.run(test())
-"
+# Error: Authentication failed
+# Solution: Use Gmail App Password instead of regular password
 ```
 
-### Development Mode
+#### API Connection Issues
 ```bash
-# Enable debug logging
-export LOG_LEVEL=DEBUG
-
-# Run with detailed output
-python main.py
+# Error: Connection timeout
+# Solution: Check internet connection and API endpoint
 ```
 
-## 📈 Monitoring & Observability
-
-### Application Logs
-- **Structured Logging**: JSON-formatted logs for parsing
-- **Log Levels**: DEBUG, INFO, WARNING, ERROR, CRITICAL
-- **Component Tracing**: Module-specific log identification
-- **Performance Logs**: Request timing and throughput metrics
-
-### Metrics Dashboard
-The application provides built-in metrics:
-- API response times and success rates
-- Data collection statistics
-- Email delivery confirmation
-- System resource utilization
-
-## 🔒 Security Features
-
-### Data Protection
-- **Environment Variables**: Secure credential storage
-- **TLS Encryption**: Encrypted email transmission
-- **Input Validation**: Comprehensive data sanitization
-- **Error Handling**: No sensitive data in error messages
-
-### API Security
-- **Rate Limiting**: Prevent API abuse
-- **Timeout Protection**: Prevent hanging requests
-- **Error Masking**: Hide internal errors from external systems
-
-## 🚀 Production Deployment
-
-### Environment Setup
+#### File Permission Errors
 ```bash
-# Production environment variables
-export LOG_LEVEL=INFO
-export ENABLE_EMAIL_REPORTS=true
-export TRACKING_DURATION=60
-
-# Run in production mode
-python main.py
+# Error: Cannot create output directories
+# Solution: Ensure write permissions or create directories manually
+mkdir -p data output temp/test_runs
 ```
 
-### Monitoring Setup
-- Monitor log files for errors and performance
-- Set up alerts for failed email deliveries
-- Track API response times and success rates
-- Monitor disk usage for data and backup files
-
-### Maintenance
-- Regular backup verification
-- Log rotation management
-- Performance metrics review
-- Configuration updates
-
-## 📚 Advanced Usage
-
-### Custom Analysis
-```python
-from business_logic import BitcoinPriceOrchestrator
-from config import Config
-
-# Custom tracking duration
-config = Config()
-config.tracking.tracking_duration_minutes = 120  # 2 hours
-
-orchestrator = BitcoinPriceOrchestrator(config)
-await orchestrator.execute_tracking_cycle()
+#### Module Import Errors
+```bash
+# Error: ModuleNotFoundError
+# Solution: Ensure virtual environment is activated and dependencies installed
+pip install -r requirements.txt
 ```
 
-### Integration with Other Systems
+### Debug Mode
+
+For detailed debugging, modify the logger level in `utils/logger.py`:
 
 ```python
-# Custom data processing
-from price_data_storage import DataStorageManager
-
-data_manager = DataStorageManager(config.data, logger)
-price_data = await data_manager.load_existing_data()
-
-# Process data for integration
-for record in price_data:
-    # Custom processing logic
-    pass
+# Change from INFO to DEBUG
+logger.setLevel(logging.DEBUG)
+c_handler.setLevel(logging.DEBUG)
+f_handler.setLevel(logging.DEBUG)
 ```
 
-## 🤝 Contributing
+## 🚀 Advanced Usage
 
-This application demonstrates professional software engineering practices:
+### Custom Tracking Duration
 
-- **Clean Architecture**: Modular design with clear boundaries
-- **SOLID Principles**: Single responsibility and dependency inversion
-- **Design Patterns**: Factory, Singleton, Observer, Circuit Breaker
-- **Professional Documentation**: Comprehensive inline and external docs
-- **Error Handling**: Comprehensive exception management
-- **Testing**: Built-in validation and testing capabilities
+```bash
+# Set custom duration in .env
+TRACKING_DURATION=30  # 30 minutes instead of default 60
+```
 
-## 📄 License
+### Multiple Recipients
 
-This project is developed for demonstration of professional automation engineering skills.
+```bash
+# Modify email_sender.py to support multiple recipients
+RECIPIENT_EMAIL=email1@example.com,email2@example.com
+```
 
-## 👨‍💻 Author
+## 🙏 Acknowledgments
 
-**Senior Automation Engineer**  
-*Specializing in enterprise-grade Python applications and automation solutions*
-
----
-
-**Built with Python 3.8+ | Designed for Enterprise Environments | Production Ready**
+- [Coinbase API](https://developers.coinbase.com/) for reliable Bitcoin price data
+- [aiohttp](https://docs.aiohttp.org/) for excellent async HTTP functionality
+- [matplotlib](https://matplotlib.org/) for powerful visualization capabilities

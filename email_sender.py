@@ -57,7 +57,7 @@ class EmailSender:
             self.logger.critical(f"Failed to send email: {e}")
             self.logger.critical(f"Error type: {type(e).__name__}, Details: {str(e)}")
 
-    def _send_email_sync(self, msg):
+    def _send_email_sync(self, msg, recipient_email):
         """Synchronous email sending using standard smtplib"""
         import smtplib
         import ssl
