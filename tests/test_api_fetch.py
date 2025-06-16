@@ -5,9 +5,6 @@ import aiohttp
 from unittest.mock import AsyncMock, patch, MagicMock
 
 
-pytestmark = pytest.mark.api  # Mark all tests in this file as API tests
-
-
 class TestAPIHandler:
     """Test suite for the API handler functionality."""
 

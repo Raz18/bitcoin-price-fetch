@@ -1,34 +1,29 @@
-# tests/conftest.py
-import os
-import json
-import pytest
-import asyncio
-from datetime import datetime
-from unittest.mock import MagicMock, patch, AsyncMock
-
 from api_handler import APIHandler
-
+import pytest
+from unittest.mock import MagicMock, patch, AsyncMock
 
 @pytest.fixture(scope="session")
 def mock_aiohttp_client_session():
     """Mock aiohttp ClientSession for API testing."""
     with patch('aiohttp.ClientSession') as mock_session:
         mock_response = AsyncMock()
-        mock_response.raise_for_status = AsyncMock()
-        mock_response.json = AsyncMock()
+        # MagicMock instead of AsyncMock for raise_for_status
+        mock_response.raise_for_status = MagicMock()  # Changed from AsyncMock
+        mock_response.json = AsyncMock(return_value={"data": {"base": "BTC", "currency": "USD", "amount": "105565.74"}})
+
+        # object that supports async context management
+        mock_response.__aenter__.return_value = mock_response
+        mock_response.__aexit__.return_value = None
 
         # Create a session instance
-        session_instance = AsyncMock()
+        session_instance = MagicMock()
+        session_instance.get.return_value = mock_response
 
-        # Create an object that can be used with async with
-        get_result = MagicMock()  # Using MagicMock instead of AsyncMock
-        get_result.__aenter__ = AsyncMock(return_value=mock_response)
-        get_result.__aexit__ = AsyncMock(return_value=None)
+        # Make session_instance support async context management
+        session_instance.__aenter__.return_value = session_instance
+        session_instance.__aexit__.return_value = None
 
-        # Make session.get return this object directly
-        session_instance.get = MagicMock(return_value=get_result)  # Not async
-
-        mock_session.return_value.__aenter__.return_value = session_instance
+        mock_session.return_value = session_instance
 
         yield mock_session, mock_response
 
