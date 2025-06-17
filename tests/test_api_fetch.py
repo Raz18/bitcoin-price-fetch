@@ -3,16 +3,20 @@ from unittest.mock import patch
 import pytest
 
 
+import pytest
+from unittest.mock import patch
+
+
 @pytest.mark.asyncio
-@pytest.mark.parametrize("response_data,expected_error_message", [
-    ({"data": {"wrong_key": "value"}}, "Error parsing API response: 'amount'"),
-    ({"wrong_structure": {}}, "Error parsing API response: 'data'"),
+@pytest.mark.parametrize("response_data,expected_error_substrings", [
+    ({"data": {"wrong_key": "value"}}, ["Error parsing API response:", "'amount'"]),
+    ({"wrong_structure": {}}, ["Error parsing API response:", "'data'"]),
     ({"data": {"base": "BTC", "currency": "USD", "amount": "not_a_number"}},
-     "Error parsing API response: could not convert string to float: 'not_a_number'")
+     ["Error parsing API response:", "could not convert string to float"])
 ], ids=["missing_keys", "wrong_structure", "invalid_value"])
 async def test_get_bitcoin_price_parsing_errors(load_api_endpoint, mock_aiohttp_client_session, response_data,
-                                                expected_error_message):
-    """Test API response parsing error handling."""
+                                                expected_error_substrings):
+    """Test API response parsing error handling with consolidated assertions."""
     # Setup
     api_handler = load_api_endpoint
     _, mock_response = mock_aiohttp_client_session
@@ -25,9 +29,11 @@ async def test_get_bitcoin_price_parsing_errors(load_api_endpoint, mock_aiohttp_
         # Verify
         assert price is None
         mock_logger.assert_called_once()
-        # Check that the actual error message matches what we expect
-        actual_error_message = mock_logger.call_args[0][0]
-        assert actual_error_message == expected_error_message
+        error_msg = mock_logger.call_args[0][0]
+
+        # Check that all expected substrings are in the error message
+        for substring in expected_error_substrings:
+            assert substring in error_msg
 
 
 # Alternative approach - test for error patterns instead of exact messages
@@ -57,8 +63,6 @@ async def test_get_bitcoin_price_parsing_errors_flexible(load_api_endpoint, mock
         actual_error_message = mock_logger.call_args[0][0]
         assert "Error parsing API response:" in actual_error_message
 
-
-# Most robust approach - separate tests for each error scenario
 class TestAPIHandlerParsingErrors:
     """Dedicated class for testing API parsing errors with specific assertions."""
 

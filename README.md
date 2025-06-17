@@ -11,13 +11,13 @@ A robust, production-ready Bitcoin price tracking application built with Python 
 - **Email Reporting**: Automated email delivery with price summaries and chart attachments
 - **Maximum Price Detection**: Tracks and reports peak prices during monitoring periods
 
-### Technical Excellence
+### Technical Highlights
 - **Asynchronous Architecture**: Built with `asyncio` and `aiohttp` for optimal performance
 - **Object-Oriented Design**: Clean separation of concerns with dedicated classes
 - **Comprehensive Logging**: Detailed logging with both console and file output
 - **Robust Error Handling**: Graceful handling of network, API, and system errors
 - **Environment-Based Configuration**: Secure credential management with `.env` support
-- **Production-Ready Testing**: Complete test suite with mocking and async test support
+- **Production-Ready Testing**: Complete API test suite with mocking and async test support
 
 ## 🏗️ Architecture
 
@@ -66,7 +66,7 @@ bitcoin-tracker/
 - **matplotlib with seaborn styling**: Professional visualizations
 - **Pathlib**: Modern file system operations
 
-## 📋 Prerequisites
+## 📋 Pre-requisites
 
 - Python 3.8 or higher
 - Gmail account or SMTP server access
@@ -75,7 +75,7 @@ bitcoin-tracker/
 
 ## 🚀 Quick Start
 
-### 1. Clone and Setup
+### 1. Extract and Setup
 
 ```bash
 # extract the code zip file
@@ -245,6 +245,9 @@ Tests use advanced mocking strategies:
     }
 ]
 ```
+### bitcoin_price_graph.png: An image file of the generated price chart.
+
+### An email sent to your configured recipient address, containing the maximum price and the graph as an attachment.
 
 ### Log Files
 - **Location**: `temp/test_runs/test_run_DD-MM-YYYY_HH-MM-SS.log`
@@ -257,9 +260,7 @@ Tests use advanced mocking strategies:
 - **Styling**: Seaborn whitegrid theme with custom formatting
 - **Details**: Timestamps, price formatting, and trend visualization
 
-## 🔧 Troubleshooting
 
-### Common Issues
 
 #### Email Authentication Errors
 ```bash
@@ -291,7 +292,7 @@ pip install -r requirements.txt
 
 For detailed debugging, modify the logger level in `utils/logger.py`:
 
-```python
+``` python
 # Change from INFO to DEBUG
 logger.setLevel(logging.DEBUG)
 c_handler.setLevel(logging.DEBUG)
